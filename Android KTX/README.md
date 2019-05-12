@@ -1,35 +1,94 @@
-# Android-Jetpack-Study
-- [Android Jetpack Docs](https://developer.android.com/jetpack)를 참조하여 작성하였습니다.
+# Android KTX
 
-1. Android Jetpack이란?
+- Android KTX란 Android Jetpack 제품군의 일부인 Kotlin 확장 프로그램 세트로, Kotlin 사용을 위해 Jetpack과 Android 플랫폼 API를 최적화 해주는 시스템.
 
-   - Android 앱을 손쉽게 개발하도록 지원하는 Android 소프트웨어 구성요소 컬렉션.
-   - 자기가 실제로 필요한 코드에만 집중할 수 있다
-   - androidx.* 패키지 라이브러리로 구성된다.
+- 참고 링크.
 
-2. Android Jetpack의 장점
+  [Android KTX | Android Developers](https://developer.android.com/kotlin/ktx.html)
 
-   - 빠른 개발 과정
-   - 상용구 코드 제거하기
-   - 고품질의 강력한 앱 빌드하기
-   - 개별적으로 채택이 가능
-   - 생산성을 향상시켜주는 Kotlin을 활용
+  [Android를 위한 코틀린 개발용 확장 라이브러리인 Android KTX를 소개합니다.](https://developers-kr.googleblog.com/2018/02/introducing-android-ktx-even-sweeter-kotlin-development-for-android.html)
 
-3. Android Jetpack의 구성요소
+1. Start
 
-   1. Foundation
+   ```
+    repositories {
+    		google()
+    	}
+   ```
 
-   2. Architecture
+   - build.gradle 파일에 다음 코드를 추가한다.
+   - 각 모듈에 맞는 패키지를 Gradle에 추가해서 사용한다. 
+     - [모듈 확인](https://developer.android.com/kotlin/ktx.html#modules)
 
-   3. Behavior
+2. KTX를 이용한 Code Sample
 
-   4. UI]
+   1. SharedPreferences (androidx.core.content)
 
-4. Jetpack을 시작하게 된 이유?
+      - Kotlin
 
-   - MVVM을 사용하면서 ViewModel, Data Binding 등을 사용하면서 느낀 것이 많았음
-   - Androidx, Architecture 사용에 따라 개발에 편의성 증진
-   - Droid Knights / Android 블로그 포스트 등 많은 사람들의 이야기를 들어보면 정말 좋은 기능들을 보유하였음에 사용하고자 함.
+        ```kotlin
+        sharedPreferences.edit()
+                   .putBoolean(key, value)
+                   .apply()
+        ```
 
-5. 작성 방식은?
-   - 보면서 필요로 할 만한 / 블로그 포스팅으로 잘 설명된 등, 접근이 쉽고 개발에 편리성이 큰 것들이나 특히 Architecture 부분의 좋은 자료들을 사용해보면서 작성
+        
+
+      - Kotlin with Android KTX
+
+        ```kotlin
+        sharedPreferences.edit { 
+            putBoolean(key, value) 
+        }
+        ```
+
+        
+
+   2. Fragment (androidx.fragment:fragment-ktx)
+
+      - Kotlin
+
+        ```kotlin
+        supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.my_fragment_container, myFragment, FRAGMENT_TAG)
+                .commitAllowingStateLoss()
+        ```
+
+        
+
+      - Kotlin with Android KTX
+
+        ```kotlin
+        supportFragmentManager.transaction(allowStateLoss = true) {
+                        replace(R.id.my_fragment_container, myFragment, FRAGMENT_TAG)
+                    }
+        ```
+
+        
+
+   3. SQLite (androidx.sqlite:sqlite-ktx)
+
+      - Kotlin
+
+        ```kotlin
+        db.beginTransaction()
+            try {
+                // insert data
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        ```
+
+        
+
+      - Kotlin with Android KTX
+
+        ```kotlin
+        db.transaction {
+                // insert data
+        	    }
+        ```
+
+        
