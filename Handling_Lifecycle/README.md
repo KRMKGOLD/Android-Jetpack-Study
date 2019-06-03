@@ -10,45 +10,47 @@
 
 - Lifecycle을 알지 못하면 메모리 누수나 충돌같은 현상이 일어날 수 있다.
 
-  internal class MyLocationListener( private val context: Context, private val callback: (Location) -> Unit ) {
-
-  ```
-    fun start() {
-        // connect to system location service
-    }
+  ```kotlin
+  internal class MyLocationListener(
+          private val context: Context,
+          private val callback: (Location) -> Unit
+  ) {
   
-    fun stop() {
-        // disconnect from system location service
-    }
-  ```
-
+      fun start() {
+          // connect to system location service
+      }
+  
+      fun stop() {
+          // disconnect from system location service
+      }
   }
-
-  class MyActivity : AppCompatActivity() { private lateinit var myLocationListener: MyLocationListener
-
-  ```
-    override fun onCreate(...) {
-        myLocationListener = MyLocationListener(this) { location ->
-            // update UI
-        }
-    }
   
-    public override fun onStart() {
-        super.onStart()
-        myLocationListener.start()
-        // manage other components that need to respond
-        // to the activity lifecycle
-    }
+  class MyActivity : AppCompatActivity() {
+      private lateinit var myLocationListener: MyLocationListener
   
-    public override fun onStop() {
-        super.onStop()
-        myLocationListener.stop()
-        // manage other components that need to respond
-        // to the activity lifecycle
-    }
-  ```
-
+      override fun onCreate(...) {
+          myLocationListener = MyLocationListener(this) { location ->
+              // update UI
+          }
+      }
+  
+      public override fun onStart() {
+          super.onStart()
+          myLocationListener.start()
+          // manage other components that need to respond
+          // to the activity lifecycle
+      }
+  
+      public override fun onStop() {
+          super.onStop()
+          myLocationListener.stop()
+          // manage other components that need to respond
+          // to the activity lifecycle
+      }
   }
+  ```
+
+  
 
 - 간단하고 좋은 코드처럼 보이지만, 한 개의 구성 요소가 아닌 여러 개의 구성 요소를 관리하면 생명 주기 코드에 많은 코드가 사용될 수 있다.
 
@@ -73,55 +75,62 @@
 
 - Activity나 Fragment의 생명주기를 분리해서 모니터링 할 수 있게 만들어준다.
 
-  class MyActivity : AppCompatActivity() { private lateinit var myLocationListener: MyLocationListener
-
-  ```
-    override fun onCreate(...) {
-        myLocationListener = MyLocationListener(this, lifecycle) { location ->
-            // update UI
-        }
-        Util.checkUserStatus { result ->
-            if (result) {
-                myLocationListener.enable()
-            }
-        }
-    }
-  ```
-
+  ```kotlin
+  class MyActivity : AppCompatActivity() {
+      private lateinit var myLocationListener: MyLocationListener
+  
+      override fun onCreate(...) {
+          myLocationListener = MyLocationListener(this, lifecycle) { location ->
+              // update UI
+          }
+          Util.checkUserStatus { result ->
+              if (result) {
+                  myLocationListener.enable()
+              }
+          }
+      }
   }
+  ```
 
 - MyLocationListener에 lifecycle를 생성자로 넘겨준다.
 
+  
+
+  ```kotlin
+  internal class MyLocationListener(
+          private val context: Context,
+          private val lifecycle: Lifecycle,
+          private val callback: (Location) -> Unit
+  ) {
+  
+      private var enabled = false
+  
+      @OnLifecycleEvent(Lifecycle.Event.ON_START)
+      fun start() {
+          if (enabled) {
+              // connect
+          }
+      }
+  
+      fun enable() {
+          enabled = true
+          if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+              // connect if not connected
+          }
+      }
+  
+      @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+      fun stop() {
+          // disconnect if connected
+      }
+  }
+  ```
+
 - 이제 MyLocationListener에서 MainActivity의 Lifecycle을 관리할 수 있다!
 
-  internal class MyLocationListener( private val context: Context, private val lifecycle: Lifecycle, private val callback: (Location) -> Unit ) {
-
-  ```
-    private var enabled = false
-  
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun start() {
-        if (enabled) {
-            // connect
-        }
-    }
-  
-    fun enable() {
-        enabled = true
-        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            // connect if not connected
-        }
-    }
-  
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun stop() {
-        // disconnect if connected
-    }
-  ```
-
-  }
-
 - Observer가 Lifecycle를 확인할수 있게 되면서, 스스로 생명 주기 관리가 가능하게 되고, 이런 클래스를 'Lifecycle-aware components'라고 한다.
+
+
 
 - Custom LifecycleOwner
 
@@ -129,7 +138,7 @@
 
     class MyActivity : Activity(), LifecycleOwner {
 
-    ```
+    ```kotlin
       private lateinit var lifecycleRegistry: LifecycleRegistry
     
       override fun onCreate(savedInstanceState: Bundle?) {
