@@ -1,14 +1,12 @@
 package com.example.room.dao
 
-import androidx.room.Delete
-import androidx.room.Insert
+import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
-import androidx.room.Update
 import com.example.room.entity.Student
 
+@Dao
 interface StudentDAO {
-    @Query("Select * From Student")
+    @Query("Select * From StudentDB")
     fun getAll() : List<Student>
 
     @Insert(onConflict = REPLACE)
@@ -20,6 +18,6 @@ interface StudentDAO {
     @Delete
     fun delete(student: Student)
 
-    @Query("Delete from student")
+    @Query("Delete from StudentDB")
     fun deleteAll()
 }

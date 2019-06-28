@@ -18,7 +18,7 @@ abstract class StudentDB : RoomDatabase() {
             if(INSTANCE == null) {
                 synchronized(StudentDB::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
-                        StudentDB::class.java, "student.db")
+                        StudentDB::class.java, "StudentDB.db")
                         .fallbackToDestructiveMigration()
                         .build()
                 }
@@ -26,7 +26,7 @@ abstract class StudentDB : RoomDatabase() {
             return INSTANCE
         }
 
-        fun destoryInstance() {
+        fun destroyInstance() {
             INSTANCE = null
         }
     }
