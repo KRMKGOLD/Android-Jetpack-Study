@@ -47,4 +47,9 @@
    - [Android KTX](https://github.com/KRMKGOLD/Android-Jetpack-Study/tree/master/Android%20KTX)
 
    - [Data Binding](https://github.com/KRMKGOLD/DataBinding-Study) - 이미 공부한 내용이므로, DataBinding-Study Repo 링크
-   - 
+   
+   - [Handling Lifecycle](https://github.com/KRMKGOLD/Android-Jetpack-Study/tree/master/Handling_Lifecycle)
+   
+   - [LiveData](https://github.com/KRMKGOLD/Android-Jetpack-Study/tree/master/LiveData)
+   
+   - [Room](https://github.com/KRMKGOLD/Android-Jetpack-Study/tree/master/Room)
